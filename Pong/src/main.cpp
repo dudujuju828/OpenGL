@@ -9,36 +9,36 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+float processDeltaTime(float &last_time) {
+	float current_time = static_cast<float>(glfwGetTime());
+    float dt = current_time - last_time;
+    last_time = current_time;
+
+	return dt;
+}
+
 int main() {
 
+	// Default values
 	Window window;
 	Input input;
-	if (!window.create(800,600,"Pong")) {
-		std::cerr << "Window creation error.\n";
-		return -1;
-	}
-	
 	Renderer renderer;
-	renderer.init(800,600);
-
 	Game game;
-	game.init(800,600);
+
+	// Initialization
+	window.create(1400,800,"Pong");
+	renderer.init(window);
+	game.init(window);
 	
-	float lastTime = static_cast<float>(glfwGetTime());
-	
-	while (!window.shouldClose()) {
-		input.pollEvents(window);
+	// Delta time
+	float last_time = static_cast<float>(glfwGetTime());
 
-	    float currentTime = static_cast<float>(glfwGetTime());
-        float dt = currentTime - lastTime;
-        lastTime = currentTime;
+	while (!window.shouldClose())
+	{
+		float dt = processDeltaTime(last_time);
 
-        game.update(input, dt);
-
-		renderer.clear();
-		game.render(renderer);
-		window.swapBuffers();
+		game.render(renderer, window, input, dt);
 	}
-    renderer.shutdown();
+
     return 0;
 }

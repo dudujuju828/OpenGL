@@ -2,6 +2,7 @@
 
 #include "Input.h"     
 #include "Renderer.h" 
+#include "Window.h"
 
 class Game {
 public:
@@ -9,13 +10,13 @@ public:
 
     ~Game();  
 
-    void init(int screenWidth, int screenHeight);
+    void init(const Window &window);
 
-    void update(const Input& input, float dt);
-
-    void render(Renderer& renderer);
+    void render(Renderer& renderer, Window& window, Input& input, float dt);
 
 private:
+
+    void update(Input& input, float dt);
 
     struct Paddle {
         float x;       
@@ -45,5 +46,8 @@ private:
     int    m_screenWidth; 
 
     int    m_screenHeight; 
-};
+	
+	int    m_checkerWidth;
 
+	int    m_checkerHeight;
+};

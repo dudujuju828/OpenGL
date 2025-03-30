@@ -20,10 +20,7 @@ public:
 	Window();
 	~Window(); // object lifetime will be hidden from client
 
-	Window(const Window&) = delete;				// delete copy constructor e.g) Window w2(w1)
-	Window& operator=(const Window&) = delete;  // delete copy assignment operator e.g) w1 = w2;  
-
-	bool create(int width, int height, const char* title);	// initialize glfw and create window
+	void create(int width, int height, const char* title);	// initialize glfw and create window
 
 	bool shouldClose() const; // query whether window should close
 

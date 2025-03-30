@@ -3,12 +3,14 @@
 
 #include <string>
 
+#include "Window.h"
+
 class Renderer {
 public:
 	Renderer();
 	~Renderer();
 	
-	bool init(int screenWidth, int screenHeight);
+	bool init(const Window &window);
 
 	void clear();
 	
@@ -17,12 +19,13 @@ public:
 	void shutdown();
 
 private:
+
 	unsigned int m_shaderProgram;
 
 	unsigned int m_quadVAO;
 	unsigned int m_quadVBO;
 	unsigned int m_quadEBO;
 
-	int m_screenWidth;
-	int m_screenHeight;
+	unsigned int m_screenWidth;
+	unsigned int m_screenHeight;
 };

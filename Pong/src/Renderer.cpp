@@ -31,9 +31,29 @@ static bool checkShaderCompilation(unsigned int shaderID, const std::string& typ
 	return true;
 }
 
-bool Renderer::init(int screenWidth, int screenHeight) {
-	m_screenWidth = screenWidth;
-	m_screenHeight = screenHeight;
+static unsigned int compileShader(GLenum shaderType, const char* source)
+{
+    unsigned int shader = glCreateShader(shaderType);
+
+    glShaderSource(shader, 1, &source, nullptr);
+
+    glCompileShader(shader);
+
+    int success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        char infoLog[512];
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    return shader;
+}
+
+bool Renderer::init(const Window &window) {
+	m_screenWidth = window.getWidth();
+	m_screenHeight = window.getHeight();
 	
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	
@@ -178,3 +198,5 @@ Renderer::Renderer() :
 Renderer::~Renderer() {
 	shutdown();
 }
+
+

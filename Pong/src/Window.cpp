@@ -27,7 +27,7 @@ Window::~Window() {
 	destroy();
 }
 
-bool Window::create(int width, int height, const char* title) {
+void Window::create(int width, int height, const char* title) {
 	// set private member variables
 	m_width = width;
 	m_height = height;
@@ -36,7 +36,6 @@ bool Window::create(int width, int height, const char* title) {
 	// initialize glfw and update global class state
 	if (!glfwInit()) {
 		s_glfw_initialized = false;
-		return false;
 	} else {
 		s_glfw_initialized = true;
 	}
@@ -50,14 +49,11 @@ bool Window::create(int width, int height, const char* title) {
 	m_window_pointer = glfwCreateWindow(width,height,title,nullptr,nullptr); 
 	if (!m_window_pointer) {
 		glfwTerminate();
-		return false;	
 	}
 	
 	// set opengl context to the window and enable vsync
 	glfwMakeContextCurrent(m_window_pointer);   
 	glfwSwapInterval(1); 					
-
-	return true;	
 }
 
 bool Window::shouldClose() const {

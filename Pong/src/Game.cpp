@@ -1,6 +1,7 @@
 
 
 #include "../include/Game.h"
+#include "../include/Window.h"
 
 #include <algorithm>
 #include <cmath>     
@@ -8,6 +9,8 @@
 Game::Game()
     : m_scoreLeft(0)
     , m_scoreRight(0)
+	, m_checkerWidth(10)
+	, m_checkerHeight(20)
     , m_screenWidth(800)
     , m_screenHeight(600)
 {
@@ -16,9 +19,9 @@ Game::Game()
 Game::~Game() {
 }
 
-void Game::init(int screenWidth, int screenHeight) {
-    m_screenWidth = screenWidth;
-    m_screenHeight = screenHeight;
+void Game::init(const Window &window) {
+    m_screenWidth = window.getWidth();
+    m_screenHeight = window.getHeight();
 
     m_scoreLeft  = 0;
     m_scoreRight = 0;
@@ -39,7 +42,7 @@ void Game::init(int screenWidth, int screenHeight) {
     m_ball.velY = 120.0f; 
 }
 
-void Game::update(const Input& input, float dt) {
+void Game::update(Input& input, float dt) {
     if (input.isPressed(Key::W)) {
         m_leftPaddle.y -= m_leftPaddle.speed * dt;
     }
@@ -99,7 +102,6 @@ void Game::update(const Input& input, float dt) {
         m_ball.velX = std::fabs(m_ball.velX);
     }
 
-    // Right paddle bounding box
     float rpLeft   = m_rightPaddle.x;
     float rpRight  = m_rightPaddle.x + m_rightPaddle.width;
     float rpTop    = m_rightPaddle.y;
@@ -117,7 +119,14 @@ void Game::update(const Input& input, float dt) {
     }
 }
 
-void Game::render(Renderer& renderer) {
+void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
+
+	input.pollEvents(window);
+
+	update(input, dt);	
+
+	renderer.clear();
+
     renderer.drawRect(m_leftPaddle.x, m_leftPaddle.y, 
                       m_leftPaddle.width, m_leftPaddle.height);
 
@@ -128,4 +137,13 @@ void Game::render(Renderer& renderer) {
                       m_ball.y - m_ball.radius, 
                       m_ball.radius * 2.0f, 
                       m_ball.radius * 2.0f);
+	
+	int y_position = static_cast<float>(m_checkerHeight/2.0f);
+	while (y_position < m_screenHeight) {
+		renderer.drawRect(m_screenWidth / 2, y_position, m_checkerWidth, m_checkerHeight);
+		y_position += m_checkerHeight * 2;
+
+	}	
+
+	window.swapBuffers();
 }
