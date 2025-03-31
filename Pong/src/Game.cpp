@@ -1,7 +1,7 @@
 
-
 #include "../include/Game.h"
 #include "../include/Window.h"
+#include "../include/Texture.h"
 
 #include <algorithm>
 #include <cmath>     
@@ -38,8 +38,8 @@ void Game::init(const Window &window) {
     m_ball.x = m_screenWidth * 0.5f;
     m_ball.y = m_screenHeight * 0.5f;
     m_ball.radius = 10.0f;
-    m_ball.velX = 200.0f; 
-    m_ball.velY = 120.0f; 
+    m_ball.velX = 400.0f; 
+    m_ball.velY = 240.0f; 
 }
 
 void Game::update(Input& input, float dt) {
@@ -126,6 +126,8 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
 	update(input, dt);	
 
 	renderer.clear();
+	
+	renderer.drawBackdrop(0, 0, m_screenWidth, m_screenHeight);
 
     renderer.drawRect(m_leftPaddle.x, m_leftPaddle.y, 
                       m_leftPaddle.width, m_leftPaddle.height);

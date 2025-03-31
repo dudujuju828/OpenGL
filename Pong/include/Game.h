@@ -3,6 +3,7 @@
 #include "Input.h"     
 #include "Renderer.h" 
 #include "Window.h"
+#include "Texture.h"
 
 class Game {
 public:
@@ -50,4 +51,6 @@ private:
 	int    m_checkerWidth;
 
 	int    m_checkerHeight;
+	
+	Texture m_backdropTexture;
 };

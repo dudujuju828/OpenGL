@@ -1,7 +1,11 @@
 
 #include "../include/Window.h" // implementing window class
-
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+static void framebufferWinCallback(GLFWwindow* window, int width, int height) {
+	glViewport(0,0,width,height);
+}
 
 bool Window::s_glfw_initialized = false;
 
@@ -53,6 +57,9 @@ void Window::create(int width, int height, const char* title) {
 	
 	// set opengl context to the window and enable vsync
 	glfwMakeContextCurrent(m_window_pointer);   
+
+	glfwSetFramebufferSizeCallback(m_window_pointer,framebufferWinCallback); 	
+	
 	glfwSwapInterval(1); 					
 }
 

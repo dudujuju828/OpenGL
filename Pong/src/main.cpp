@@ -1,13 +1,13 @@
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <iostream>
 
 #include "../include/Window.h"
 #include "../include/Input.h"
 #include "../include/Renderer.h"
 #include "../include/Game.h"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 float processDeltaTime(float &last_time) {
 	float current_time = static_cast<float>(glfwGetTime());
@@ -26,7 +26,7 @@ int main() {
 	Game game;
 
 	// Initialization
-	window.create(1400,800,"Pong");
+	window.create(1920,1080,"Pong");
 	renderer.init(window);
 	game.init(window);
 	

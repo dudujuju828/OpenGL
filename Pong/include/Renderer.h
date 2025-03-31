@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Window.h"
+#include "Texture.h"
 
 class Renderer {
 public:
@@ -15,6 +16,7 @@ public:
 	void clear();
 	
 	void drawRect(float x, float y, float width, float height);
+	void drawBackdrop(float x, float y, float width, float height);
 
 	void shutdown();
 
@@ -28,4 +30,6 @@ private:
 
 	unsigned int m_screenWidth;
 	unsigned int m_screenHeight;
+
+	Texture m_backdropTexture;
 };

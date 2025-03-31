@@ -1,8 +1,7 @@
-
-#include "../include/Renderer.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "../include/Renderer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -57,16 +56,24 @@ bool Renderer::init(const Window &window) {
 	
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	
+	glEnable(GL_BLEND);
+	
+	m_backdropTexture.init("./images/stone-wall-texture.jpg");
+	m_backdropTexture.bind(GL_TEXTURE0);
+	
 	const char* vertexShaderSrc = R"(
 		#version 330 core
 		
-		layout (location = 0) in vec2 aPos;
+		layout (location = 0) in vec4 aPos;
 	
 		uniform mat4 u_projection;
 		uniform mat4 u_model;
 
+		out vec2 texCoords;
+
 		void main() {
-			gl_Position = u_projection * u_model * vec4(aPos, 0.0f, 1.0f);
+			gl_Position = u_projection * u_model * vec4(aPos.xy, 0.0f, 1.0f);
+			texCoords = aPos.zw;
 		}
 	)";	
 
@@ -74,9 +81,17 @@ bool Renderer::init(const Window &window) {
 		#version 330 core
 		
 		out vec4 FragColor;		
+		in vec2 texCoords;
+		
+		uniform bool textureOn;
+		uniform sampler2D gSampler;
 		
 		void main() {
-			FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+			if (!textureOn) {
+				FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+			} else {
+				FragColor = texture(gSampler, texCoords);
+			}
 		}
 	)";
 
@@ -105,11 +120,11 @@ bool Renderer::init(const Window &window) {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	float vertices[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f
+	float vertices[] = { 
+		0.0f, 0.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
@@ -130,18 +145,51 @@ bool Renderer::init(const Window &window) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
-	
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)0);
+
 	glBindVertexArray(0);
-
+	
 	return true;
-
 }
 
 void Renderer::clear() {
 	glClearColor(0.2f,0.2f,0.2f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+void Renderer::drawBackdrop(float x, float y, float width, float height) {
+	
+	glUseProgram(m_shaderProgram);
+	m_backdropTexture.bind(GL_TEXTURE0);
+
+	int samplerLocation = glGetUniformLocation(m_shaderProgram, "gSampler");
+	glUniform1i(samplerLocation, 0);
+	
+	int textureOnLocation = glGetUniformLocation(m_shaderProgram, "textureOn");
+	glUniform1i(textureOnLocation, 1);
+	
+	glm::mat4 projection = glm::ortho(0.0f, (float)m_screenWidth, (float)m_screenHeight, 0.0f, -1.0f, 1.0f);	
+
+	glm::mat4 model(1.0f);
+	
+	model = glm::translate(model, glm::vec3(x,y,0.0f));
+	model = glm::scale(model, glm::vec3(width, height, 1.0f));
+
+	GLint projLoc = glGetUniformLocation(m_shaderProgram, "u_projection");
+	GLint modelLoc = glGetUniformLocation(m_shaderProgram, "u_model");
+	
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glBindVertexArray(m_quadVAO);
+	
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glUniform1i(textureOnLocation, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
 
 void Renderer::drawRect(float x, float y, float width, float height) {
 	glUseProgram(m_shaderProgram);
