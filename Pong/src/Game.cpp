@@ -40,7 +40,7 @@ void Game::init(const Window &window) {
     m_screenWidth = window.getWidth();
     m_screenHeight = window.getHeight();
 
-	initPaddles(40.0f, 100.0f, 200.0f);
+	initPaddles(20.0f, 70.0f, 200.0f);
 }
 
 void Game::update(Input& input, Window& window, float dt) {
