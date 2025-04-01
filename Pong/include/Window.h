@@ -23,6 +23,7 @@ public:
 	void create(int width, int height, const char* title);	// initialize glfw and create window
 
 	bool shouldClose() const; // query whether window should close
+	void setShouldClose(bool trut);
 
 	void swapBuffers(); // swap front and back buffers
 

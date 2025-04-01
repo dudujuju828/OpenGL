@@ -10,6 +10,7 @@ enum class Key {
 	A,
 	S,
 	D,
+	Escape,
 	Up,
 	Down,
 	Left,

@@ -20,6 +20,10 @@ void Window::destroy() {
 	}
 }
 
+void Window::setShouldClose(bool truth) {
+	glfwSetWindowShouldClose(m_window_pointer,truth);
+}
+
 // ensure states are set to default
 Window::Window() {
 	m_window_pointer = nullptr;

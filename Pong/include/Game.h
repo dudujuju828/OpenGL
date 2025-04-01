@@ -4,6 +4,9 @@
 #include "Renderer.h" 
 #include "Window.h"
 #include "Texture.h"
+#include "Ball.h"
+
+#include "Paddle.h"
 
 class Game {
 public:
@@ -15,25 +18,16 @@ public:
 
     void render(Renderer& renderer, Window& window, Input& input, float dt);
 
+	float getBallVelX() const { return m_ball.velX; }
+	float getBallVelY() const { return m_ball.velY; }
+
 private:
 
-    void update(Input& input, float dt);
+    void update(Input& input, Window& window, float dt);
 
-    struct Paddle {
-        float x;       
-        float y;       
-        float width;   
-        float height;  
-        float speed;   
-    };
+	void initPaddles(float width, float height, float speed);
 
-    struct Ball {
-        float x;       
-        float y;      
-        float radius;  
-        float velX; 
-        float velY;
-    };
+	void drawCheckers(Renderer &renderer);
 
     Paddle m_leftPaddle; 
     Paddle m_rightPaddle;
