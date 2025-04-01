@@ -19,5 +19,5 @@ To compile one of the projects (for example, Pong), follow these steps:
 
 ```bash
 git clone "https://github.com/dudujuju828/OpenGL"
-cd Pong
+cd OpenGL/Pong
 make
