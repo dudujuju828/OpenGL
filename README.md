@@ -1,4 +1,4 @@
-# OpenGL Projects Repository
+# OpenGL Projects
 
 ![Project Banner](./Retro_Pong.png)
 
