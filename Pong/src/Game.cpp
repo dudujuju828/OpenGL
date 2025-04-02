@@ -12,8 +12,8 @@
 Game::Game()
     : m_scoreLeft(0)
     , m_scoreRight(0)
-	, m_checkerWidth(10)
-	, m_checkerHeight(20)
+	, m_checkerWidth(7)
+	, m_checkerHeight(10)
     , m_screenWidth(800)
     , m_screenHeight(600)
 	, m_ball(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 10.0f, 800.0f, 480.0f)
@@ -87,11 +87,17 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
 	update(input, window, dt);	
 
 	renderer.clear();
+
+	renderer.useProgram(renderer.getDefaultbufferProgram());
+	renderer.setDefaultbufferFloat("time",window.getTime());
 	
 	renderer.useProgram(renderer.getFramebufferProgram());
+	renderer.setFramebufferVec3("rectColor",0.1f,0.1f,0.1f);
 	
-	renderer.drawBackdrop(0, 0, m_screenWidth, m_screenHeight);
+//	renderer.drawBackdrop(0, 0, m_screenWidth, m_screenHeight);
+	renderer.drawRect(0,0,m_screenWidth,m_screenHeight);
 
+	renderer.setFramebufferVec3("rectColor",1.0f,1.0f,1.0f);
     renderer.drawRect(m_leftPaddle.getX(), m_leftPaddle.getY(), 
                       m_leftPaddle.getWidth(), m_leftPaddle.getHeight());
 
@@ -102,8 +108,9 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
                       m_ball.y - m_ball.radius, 
                       m_ball.radius * 2.0f, 
                       m_ball.radius * 2.0f);
-
+	
 	drawCheckers(renderer);
+
 	
 	renderer.useProgram(renderer.getDefaultbufferProgram());
 	renderer.postProcess(0,0,m_screenWidth,m_screenHeight);

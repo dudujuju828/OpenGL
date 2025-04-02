@@ -26,6 +26,7 @@ public:
 	void setShouldClose(bool trut);
 
 	void swapBuffers(); // swap front and back buffers
+	float getTime();
 
 	int getWidth() const { return m_width; }   // implicitly inline, returns window width
 	int getHeight() const { return m_height; } // returns window height

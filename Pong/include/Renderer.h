@@ -18,6 +18,9 @@ public:
 	void drawRect(float x, float y, float width, float height);
 	void drawBackdrop(float x, float y, float width, float height);
 	void useProgram(unsigned int programID);
+	void setFramebufferVec3(const char * uniformName, float r, float g, float b);
+	void setFramebufferFloat(const char * uniformName, float value);
+	void setDefaultbufferFloat(const char * uniformName, float value);
 	
 	unsigned int getFramebufferProgram() { return m_frameBufferProgram; }
 	unsigned int getDefaultbufferProgram() { return m_defaultBufferProgram; }

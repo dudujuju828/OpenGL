@@ -24,6 +24,10 @@ void Window::setShouldClose(bool truth) {
 	glfwSetWindowShouldClose(m_window_pointer,truth);
 }
 
+float Window::getTime() {
+	return static_cast<float>(glfwGetTime());
+}
+
 // ensure states are set to default
 Window::Window() {
 	m_window_pointer = nullptr;
@@ -64,7 +68,6 @@ void Window::create(int width, int height, const char* title) {
 
 	glfwSetFramebufferSizeCallback(m_window_pointer,framebufferWinCallback); 	
 	
-	glfwSwapInterval(1); 					
 }
 
 bool Window::shouldClose() const {

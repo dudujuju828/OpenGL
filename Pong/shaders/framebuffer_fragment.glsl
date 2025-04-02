@@ -5,10 +5,13 @@
 		
 		uniform bool textureOn;
 		uniform sampler2D gSampler;
+		uniform vec3 rectColor;
+		
+
 		
 		void main() {
 			if (!textureOn) {
-				FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+				FragColor = vec4(rectColor,1.0f);
 			} else {
 				FragColor = texture(gSampler, texCoords);
 			}

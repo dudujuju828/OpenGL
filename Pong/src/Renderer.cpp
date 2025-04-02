@@ -85,6 +85,21 @@ void Renderer::useProgram(unsigned int programID) {
 	glUseProgram(programID);
 }
 
+void Renderer::setFramebufferVec3(const char* uniformName, float r, float g, float b) {
+	GLint Location = glGetUniformLocation(m_frameBufferProgram, uniformName);
+	glUniform3f(Location, r, g, b);
+}
+
+void Renderer::setDefaultbufferFloat(const char* uniformName, float value) {
+	GLint Location = glGetUniformLocation(m_defaultBufferProgram, uniformName);
+	glUniform1f(Location, value);
+}
+
+void Renderer::setFramebufferFloat(const char* uniformName, float value) {
+	GLint Location = glGetUniformLocation(m_frameBufferProgram, uniformName);
+	glUniform1f(Location, value);
+}
+
 void Renderer::clear() {
 	glClearColor(0.2f,0.2f,0.2f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
