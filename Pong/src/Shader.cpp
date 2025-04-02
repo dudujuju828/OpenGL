@@ -7,10 +7,13 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <iostream>
 
-static void Shader::checkShaderCompilation(unsigned int objectID) {
+using std::string;
+
+void Shader::checkShaderCompilation(unsigned int objectID) {
 	int success;
-	char* infoLog[512];
+	char infoLog[512];
 	glGetShaderiv(objectID, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(objectID, sizeof(infoLog), nullptr, infoLog);
@@ -18,9 +21,9 @@ static void Shader::checkShaderCompilation(unsigned int objectID) {
 	}
 }
 
-static void Shader::checkProgramLinkage(unsigned int objectID) {
+void Shader::checkProgramLinkage(unsigned int objectID) {
 	int success;
-	char* infoLog[512];
+	char infoLog[512];
 	glGetShaderiv(objectID, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(objectID, sizeof(infoLog), nullptr, infoLog);
@@ -52,8 +55,11 @@ Shader::Shader(const char* vertex_shader_path, const char* fragment_shader_path)
 	unsigned int vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);	
 	unsigned int fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);	
 	
-	glShaderSource(vertex_shader_object, 1, &vertex_shader_source.c_str(), nullptr);
-	glShaderSource(fragment_shader_object, 1, &fragment_shader_source.c_str(), nullptr);
+	const char * vertex_cstyle_source = vertex_shader_source.c_str();
+	const char * fragment_cstyle_source = fragment_shader_source.c_str();
+	
+	glShaderSource(vertex_shader_object, 1, &vertex_cstyle_source, nullptr);
+	glShaderSource(fragment_shader_object, 1, &fragment_cstyle_source, nullptr);
 	
 	glCompileShader(vertex_shader_object);	
 	glCompileShader(fragment_shader_object);	

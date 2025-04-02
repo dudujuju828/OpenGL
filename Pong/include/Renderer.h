@@ -17,12 +17,22 @@ public:
 	
 	void drawRect(float x, float y, float width, float height);
 	void drawBackdrop(float x, float y, float width, float height);
+	void useProgram(unsigned int programID);
+	
+	unsigned int getFramebufferProgram() { return m_frameBufferProgram; }
+	unsigned int getDefaultbufferProgram() { return m_defaultBufferProgram; }
+	
+	void postProcess(float x, float y, float width, float height);
 
 	void shutdown();
 
 private:
 
-	unsigned int m_shaderProgram;
+	unsigned int m_frameBufferProgram;
+	unsigned int m_defaultBufferProgram;	
+
+	unsigned int m_frameBufferObject;
+	unsigned int m_frameBufferTexture;
 
 	unsigned int m_quadVAO;
 	unsigned int m_quadVBO;

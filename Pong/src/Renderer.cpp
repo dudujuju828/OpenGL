@@ -2,53 +2,13 @@
 #include <GLFW/glfw3.h>
 
 #include "../include/Renderer.h"
+#include "../include/Shader.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
-
-static bool checkShaderCompilation(unsigned int shaderID, const std::string& type) {
-	int success;
-	char infoLog[1024];	
-	if (type == "PROGRAM") {
-		glGetProgramiv(shaderID, GL_LINK_STATUS, &success);
-		if (!success) {
-			glGetProgramInfoLog(shaderID, 1024, nullptr, infoLog);
-			std::cerr << "ERROR::PROGRAM_LINKING_ERROR\n" << infoLog << std::endl;
-			return false;
-		} 
-	} else {
-		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			glGetShaderInfoLog(shaderID, 1024, nullptr, infoLog);
-			std::cerr << "ERROR::SHADER_COMPILATION_ERROR\n" << infoLog << std::endl;
-			return false;
-		}
-	}
-	return true;
-}
-
-static unsigned int compileShader(GLenum shaderType, const char* source)
-{
-    unsigned int shader = glCreateShader(shaderType);
-
-    glShaderSource(shader, 1, &source, nullptr);
-
-    glCompileShader(shader);
-
-    int success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        char infoLog[512];
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    return shader;
-}
 
 bool Renderer::init(const Window &window) {
 	m_screenWidth = window.getWidth();
@@ -61,70 +21,17 @@ bool Renderer::init(const Window &window) {
 	m_backdropTexture.init("./images/stone-wall-texture.jpg");
 	m_backdropTexture.bind(GL_TEXTURE0);
 	
-	const char* vertexShaderSrc = R"(
-		#version 330 core
-		
-		layout (location = 0) in vec4 aPos;
+	Shader framebuffer_program("./shaders/framebuffer_vertex.glsl", "./shaders/framebuffer_fragment.glsl");
+	m_frameBufferProgram = framebuffer_program.getProgramID();
 	
-		uniform mat4 u_projection;
-		uniform mat4 u_model;
-
-		out vec2 texCoords;
-
-		void main() {
-			gl_Position = u_projection * u_model * vec4(aPos.xy, 0.0f, 1.0f);
-			texCoords = aPos.zw;
-		}
-	)";	
-
-	const char* fragmentShaderSrc = R"(
-		#version 330 core
-		
-		out vec4 FragColor;		
-		in vec2 texCoords;
-		
-		uniform bool textureOn;
-		uniform sampler2D gSampler;
-		
-		void main() {
-			if (!textureOn) {
-				FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
-			} else {
-				FragColor = texture(gSampler, texCoords);
-			}
-		}
-	)";
-
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);	
-	glShaderSource(vertexShader, 1, &vertexShaderSrc, nullptr);
-	glCompileShader(vertexShader);
-	if (!checkShaderCompilation(vertexShader, "VERTEX")) {
-		return false;
-	}
+	Shader defaultbuffer_program("./shaders/defaultbuffer_vertex.glsl", "./shaders/defaultbuffer_fragment.glsl");
+	m_defaultBufferProgram = defaultbuffer_program.getProgramID();
 	
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSrc, nullptr);
-	glCompileShader(fragmentShader);
-	if (!checkShaderCompilation(fragmentShader, "FRAGMENT")) {
-		return false;
-	}
-
-	m_shaderProgram = glCreateProgram();
-	glAttachShader(m_shaderProgram, vertexShader);
-	glAttachShader(m_shaderProgram, fragmentShader);
-	glLinkProgram(m_shaderProgram);
-	if (!checkShaderCompilation(m_shaderProgram, "PROGRAM")) {
-		return false;
-	}
-	
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
 	float vertices[] = { 
-		0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f, 1.0f,
 		1.0f, 1.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 1.0f, 1.0f
+		0.0f, 1.0f, 0.0f, 0.0f
 	};
 
 	unsigned int indices[] = {
@@ -146,10 +53,36 @@ bool Renderer::init(const Window &window) {
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)0);
+	
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	
+	unsigned int textureColorBuffer;
+	glGenTextures(1, &textureColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_screenWidth, m_screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+	
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "Error with framebuffer completion.\n";
+	}
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+	m_frameBufferObject = framebuffer;
+	m_frameBufferTexture = textureColorBuffer;
 
 	glBindVertexArray(0);
 	
 	return true;
+}
+
+void Renderer::useProgram(unsigned int programID) {
+	glUseProgram(programID);
 }
 
 void Renderer::clear() {
@@ -159,13 +92,13 @@ void Renderer::clear() {
 
 void Renderer::drawBackdrop(float x, float y, float width, float height) {
 	
-	glUseProgram(m_shaderProgram);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBufferObject);
 	m_backdropTexture.bind(GL_TEXTURE0);
 
-	int samplerLocation = glGetUniformLocation(m_shaderProgram, "gSampler");
+	int samplerLocation = glGetUniformLocation(m_frameBufferProgram, "gSampler");
 	glUniform1i(samplerLocation, 0);
 	
-	int textureOnLocation = glGetUniformLocation(m_shaderProgram, "textureOn");
+	int textureOnLocation = glGetUniformLocation(m_frameBufferProgram, "textureOn");
 	glUniform1i(textureOnLocation, 1);
 	
 	glm::mat4 projection = glm::ortho(0.0f, (float)m_screenWidth, (float)m_screenHeight, 0.0f, -1.0f, 1.0f);	
@@ -175,8 +108,8 @@ void Renderer::drawBackdrop(float x, float y, float width, float height) {
 	model = glm::translate(model, glm::vec3(x,y,0.0f));
 	model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-	GLint projLoc = glGetUniformLocation(m_shaderProgram, "u_projection");
-	GLint modelLoc = glGetUniformLocation(m_shaderProgram, "u_model");
+	GLint projLoc = glGetUniformLocation(m_frameBufferProgram, "u_projection");
+	GLint modelLoc = glGetUniformLocation(m_frameBufferProgram, "u_model");
 	
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -187,13 +120,13 @@ void Renderer::drawBackdrop(float x, float y, float width, float height) {
 
 	glUniform1i(textureOnLocation, 0);
 	glBindVertexArray(0);
-	glUseProgram(0);
 }
 
 
 void Renderer::drawRect(float x, float y, float width, float height) {
-	glUseProgram(m_shaderProgram);
 	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBufferObject);
+
 	glm::mat4 projection = glm::ortho(0.0f, (float)m_screenWidth, (float)m_screenHeight, 0.0f, -1.0f, 1.0f);	
 
 	glm::mat4 model(1.0f);
@@ -201,8 +134,8 @@ void Renderer::drawRect(float x, float y, float width, float height) {
 	model = glm::translate(model, glm::vec3(x,y,0.0f));
 	model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-	GLint projLoc = glGetUniformLocation(m_shaderProgram, "u_projection");
-	GLint modelLoc = glGetUniformLocation(m_shaderProgram, "u_model");
+	GLint projLoc = glGetUniformLocation(m_frameBufferProgram, "u_projection");
+	GLint modelLoc = glGetUniformLocation(m_frameBufferProgram, "u_model");
 	
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -212,8 +145,36 @@ void Renderer::drawRect(float x, float y, float width, float height) {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
-	glUseProgram(0);
 };
+
+
+void Renderer::postProcess(float x, float y, float width, float height) {
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	
+	glm::mat4 projection = glm::ortho(0.0f, (float)m_screenWidth, (float)m_screenHeight, 0.0f, -1.0f, 1.0f);	
+
+	glm::mat4 model(1.0f);
+	
+	model = glm::translate(model, glm::vec3(x,y,0.0f));
+	model = glm::scale(model, glm::vec3(width, height, 1.0f));
+
+	int samplerLocation = glGetUniformLocation(m_defaultBufferProgram, "gSampler");
+	GLint projLoc = glGetUniformLocation(m_defaultBufferProgram, "u_projection");
+	GLint modelLoc = glGetUniformLocation(m_defaultBufferProgram, "u_model");
+	
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniform1i(samplerLocation, 0);
+
+	glBindVertexArray(m_quadVAO);
+	glBindTexture(GL_TEXTURE_2D, m_frameBufferTexture);
+	
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+};
+
 
 void Renderer::shutdown() {
 	if (m_quadEBO) {
@@ -228,14 +189,14 @@ void Renderer::shutdown() {
 		glDeleteVertexArrays(1, &m_quadVAO);	
 		m_quadVAO = 0;
 	}
-	if (m_shaderProgram) {
-		glDeleteProgram(m_shaderProgram);
-		m_shaderProgram = 0;
+	if (m_frameBufferProgram) {
+		glDeleteProgram(m_frameBufferProgram);
+		m_frameBufferProgram = 0;
 	}
 }
 
 Renderer::Renderer() : 
-	m_shaderProgram(0),
+	m_frameBufferProgram(0),
 	m_quadVAO(0),
 	m_quadVBO(0),
 	m_quadEBO(0),	

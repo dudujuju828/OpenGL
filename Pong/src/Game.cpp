@@ -88,6 +88,8 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
 
 	renderer.clear();
 	
+	renderer.useProgram(renderer.getFramebufferProgram());
+	
 	renderer.drawBackdrop(0, 0, m_screenWidth, m_screenHeight);
 
     renderer.drawRect(m_leftPaddle.getX(), m_leftPaddle.getY(), 
@@ -102,7 +104,9 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
                       m_ball.radius * 2.0f);
 
 	drawCheckers(renderer);
-
-
+	
+	renderer.useProgram(renderer.getDefaultbufferProgram());
+	renderer.postProcess(0,0,m_screenWidth,m_screenHeight);
+	
 	window.swapBuffers();
 }
