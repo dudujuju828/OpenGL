@@ -1,5 +1,7 @@
 # OpenGL Projects Repository
 
+![Project Banner](./Retro_Pong.png)
+
 This repository contains all of my OpenGL projects.
 
 ## Requirements
