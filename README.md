@@ -1,9 +1,11 @@
 # OpenGL Projects
-
+This repository contains all of my OpenGL projects. Most will be games, but I'm sure some of them will be other sorts of applications.
 ## Pong
 ![Project Banner](./Pong/assets/pong_gameplay.gif)
-
-This repository contains all of my OpenGL projects.
+### Pressing 0
+  By pressing 0 (not num-pad), you toggle on/off the left paddle's AI.
+### Pressing Space
+  By pressing space, you can pause the balls position.
 
 ## Requirements
 
