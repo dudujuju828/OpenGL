@@ -14,8 +14,6 @@ bool Renderer::init(const Window &window) {
 	m_screenWidth = window.getWidth();
 	m_screenHeight = window.getHeight();
 	
-	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	
 	glEnable(GL_BLEND);
 	
 	m_backdropTexture.init("./images/stone-wall-texture.jpg");

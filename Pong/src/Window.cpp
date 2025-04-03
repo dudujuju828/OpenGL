@@ -65,6 +65,11 @@ void Window::create(int width, int height, const char* title) {
 	
 	// set opengl context to the window and enable vsync
 	glfwMakeContextCurrent(m_window_pointer);   
+	
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	
+	glClearColor(0.0f,0.0f,0.0f,1.0f);
+	glClear(GL_COLOR_BUFFER_BIT || GL_DEPTH_BUFFER_BIT);
+	glfwSwapBuffers(m_window_pointer);
 
 	glfwSetFramebufferSizeCallback(m_window_pointer,framebufferWinCallback); 	
 	
