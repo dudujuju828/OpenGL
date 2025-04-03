@@ -12,11 +12,11 @@
 Game::Game()
     : m_scoreLeft(0)
     , m_scoreRight(0)
-	, m_checkerWidth(7)
-	, m_checkerHeight(10)
+	, m_checkerWidth(3)
+	, m_checkerHeight(20)
     , m_screenWidth(800)
     , m_screenHeight(600)
-	, m_ball(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 10.0f, 800.0f, 480.0f)
+	, m_ball(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 10.0f, 950.0f, 480.0f)
 {
 }
 
@@ -40,7 +40,7 @@ void Game::init(const Window &window) {
     m_screenWidth = window.getWidth();
     m_screenHeight = window.getHeight();
 
-	initPaddles(20.0f, 70.0f, 200.0f);
+	initPaddles(20.0f, 100.0f, 600.0f);
 }
 
 void Game::update(Input& input, Window& window, float dt) {
@@ -61,11 +61,20 @@ void Game::update(Input& input, Window& window, float dt) {
 	if (input.isPressed(Key::Escape)) {
 		window.setShouldClose(true);
 	}
+
+	// left paddle will be assumed to be AI
+	// simple algorithm, compare Y's
+	if (m_leftPaddle.getY() + static_cast<float>(m_leftPaddle.getHeight() / 2.0f)  > m_ball.y) {
+        m_leftPaddle.setY(m_leftPaddle.getY() - (m_leftPaddle.getSpeed() * dt));
+	} else {
+        m_leftPaddle.setY(m_leftPaddle.getY() + (m_leftPaddle.getSpeed() * dt));
+	}
+	
 	
 	m_leftPaddle.clamp(m_screenHeight);
 	m_rightPaddle.clamp(m_screenHeight);
 
-	m_ball.update(m_screenHeight, m_screenWidth, dt);
+	m_ball.update(m_screenHeight, m_screenWidth, dt, m_leftPaddle, m_rightPaddle);
 
 	m_leftPaddle.checkCollisionLeft(m_ball);
 	m_rightPaddle.checkCollisionRight(m_ball);
