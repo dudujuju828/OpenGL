@@ -5,8 +5,9 @@
 #include "Window.h"
 #include "Texture.h"
 #include "Ball.h"
-
 #include "Paddle.h"
+
+#include <random>
 
 class Game {
 public:
@@ -46,5 +47,17 @@ private:
 
 	int    m_checkerHeight;
 	
+	int random_number_delay;
+	
+	bool m_paused;
+	bool m_previously_paused;
+
+	bool m_ai_on;
+	bool m_ai_previously_on;
+	
+
 	Texture m_backdropTexture;
+	
+	std::mt19937 m_generator;
+	std::uniform_real_distribution<float> m_distrib;
 };

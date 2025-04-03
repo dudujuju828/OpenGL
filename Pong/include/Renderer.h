@@ -25,7 +25,7 @@ public:
 	unsigned int getFramebufferProgram() { return m_frameBufferProgram; }
 	unsigned int getDefaultbufferProgram() { return m_defaultBufferProgram; }
 	
-	void postProcess(float x, float y, float width, float height);
+	void postProcess(float x, float y, float width, float height, Window &window);
 
 	void shutdown();
 

@@ -5,6 +5,9 @@ in vec2 texCoords;
 
 uniform sampler2D gSampler;
 uniform float time;
+
+uniform float u_screenWidth;
+uniform float u_screenHeight;
 		
 void main() {
 	vec2 centeredCoords = texCoords * 2 - 1.0f;	
@@ -13,15 +16,12 @@ void main() {
 	centeredCoords *= 1.0 + k * r2;
 	vec2 finalTexCoord = (centeredCoords + 1.0) * 0.5;
 		
-	float width = 200.0f;
-	float screenWidth = 1920;
-	float screenHeight = 1080;
 	float dist = length(finalTexCoord - vec2(0.5));
 	float vignetteFactor = smoothstep(0.8,1.0,dist);
 		
 	vec4 color = texture(gSampler, finalTexCoord);
-	color.g *= (sin(finalTexCoord.y * screenHeight * 0.5f) + 1.0f) * 0.25f + 1.0f;
-	color.rb *= (cos(finalTexCoord.y * screenHeight * 0.5f) + 1.0f) * 0.235f + 1.0f;
+	color.g *= (sin(finalTexCoord.y * u_screenHeight * 0.5f) + 1.0f) * 0.25f + 1.0f;
+	color.rb *= (cos(finalTexCoord.y * u_screenHeight * 0.5f) + 1.0f) * 0.235f + 1.0f;
 			
 	FragColor = color * (1.0 - vignetteFactor);
 			

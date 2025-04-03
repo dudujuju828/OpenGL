@@ -24,7 +24,13 @@ bool Renderer::init(const Window &window) {
 	
 	Shader defaultbuffer_program("./shaders/defaultbuffer_vertex.glsl", "./shaders/defaultbuffer_fragment.glsl");
 	m_defaultBufferProgram = defaultbuffer_program.getProgramID();
-	
+
+	glUseProgram(m_defaultBufferProgram);
+	GLint widthLocation = glGetUniformLocation(m_defaultBufferProgram, "u_screenWidth");
+	GLint heightLocation = glGetUniformLocation(m_defaultBufferProgram, "u_screenHeight");
+	glUniform1f(widthLocation, window.getWidth());
+	glUniform1f(heightLocation, window.getHeight());
+
 	float vertices[] = { 
 		0.0f, 0.0f, 0.0f, 1.0f,
 		1.0f, 0.0f, 1.0f, 1.0f,
@@ -161,7 +167,14 @@ void Renderer::drawRect(float x, float y, float width, float height) {
 };
 
 
-void Renderer::postProcess(float x, float y, float width, float height) {
+void Renderer::postProcess(float x, float y, float width, float height, Window& window) {
+
+	if (window.getWidth() != m_screenWidth || window.getHeight() != m_screenHeight) {
+		GLint widthLocation = glGetUniformLocation(m_defaultBufferProgram, "u_screenWidth");
+		GLint heightLocation = glGetUniformLocation(m_defaultBufferProgram, "u_screenHeight");
+		glUniform1f(widthLocation, window.getWidth());
+		glUniform1f(heightLocation, window.getHeight());
+	}
 	
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	

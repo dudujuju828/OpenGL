@@ -17,5 +17,5 @@ public:
 	float defaultVelX;
 	float defaultVelY;
 
-	void update(float screen_height, float screen_width, float dt, Paddle &leftPaddle, Paddle &rightPaddle);
+	void update(float screen_height, float screen_width, float dt, Paddle &leftPaddle, Paddle &rightPaddle, float random_value);
 };

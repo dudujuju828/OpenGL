@@ -14,6 +14,8 @@ Input::Input() {
 	m_key_map[Key::S] = false;	
 	m_key_map[Key::D] = false;	
 	m_key_map[Key::Escape] = false;
+	m_key_map[Key::Space] = false;
+	m_key_map[Key::Zero] = false;
 	m_key_map[Key::Up] = false;	
 	m_key_map[Key::Down] = false;	
 	m_key_map[Key::Left] = false;	
@@ -35,6 +37,8 @@ void Input::pollEvents(const Window &window) {
 			case Key::S : glfwKeyCode = GLFW_KEY_S; break;
 			case Key::D : glfwKeyCode = GLFW_KEY_D; break;
 			case Key::Escape : glfwKeyCode = GLFW_KEY_ESCAPE; break;
+			case Key::Space : glfwKeyCode = GLFW_KEY_SPACE; break;
+			case Key::Zero : glfwKeyCode = GLFW_KEY_0; break;
 			case Key::Up : glfwKeyCode = GLFW_KEY_UP; break;
 			case Key::Down : glfwKeyCode = GLFW_KEY_DOWN; break;
 			case Key::Left : glfwKeyCode = GLFW_KEY_LEFT; break;

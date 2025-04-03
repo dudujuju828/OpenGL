@@ -7,16 +7,23 @@
 #include "../include/Ball.h"
 
 #include <algorithm>
+#include <iostream>
 #include <cmath>     
+#include <random>
 
 Game::Game()
     : m_scoreLeft(0)
     , m_scoreRight(0)
 	, m_checkerWidth(3)
 	, m_checkerHeight(20)
-    , m_screenWidth(800)
-    , m_screenHeight(600)
-	, m_ball(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 10.0f, 950.0f, 480.0f)
+    , m_screenWidth(1920)
+    , m_screenHeight(1080)
+	, m_ball(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 7.0f, 1400.0f, 240.0f)
+	, m_distrib(-2.0f, 2.0f)
+	, m_paused(false)
+	, m_previously_paused(false)
+	, m_ai_on(true)
+	, m_ai_previously_on(false)
 {
 }
 
@@ -27,18 +34,26 @@ void Game::initPaddles(float width, float height, float speed) {
 
 	float fixed_x_distance = 50.0f;
 
-	Paddle leftPaddle(fixed_x_distance, m_screenHeight * 0.5f - height/2.0f, width, height, speed);
+	Paddle leftPaddle(fixed_x_distance, m_screenHeight * 0.5f - height/2.0f, width, height, speed*1.6f);
 
 	Paddle rightPaddle(static_cast<float>(m_screenWidth) - (width + fixed_x_distance),
-										  m_screenHeight * 0.5f - height/2.0f, width, height, speed);
+										  m_screenHeight * 0.5f - height/2.0f, width, height, speed*1.6f);
 	
 	m_leftPaddle = leftPaddle;
+
 	m_rightPaddle = rightPaddle;
 }
 
 void Game::init(const Window &window) {
     m_screenWidth = window.getWidth();
     m_screenHeight = window.getHeight();
+	
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	m_generator = gen;
+	
+	m_ball.x = m_screenWidth;
+	m_ball.y = m_screenHeight;
 
 	initPaddles(20.0f, 100.0f, 600.0f);
 }
@@ -57,24 +72,47 @@ void Game::update(Input& input, Window& window, float dt) {
     if (input.isPressed(Key::Down)) {
         m_rightPaddle.setY(m_rightPaddle.getY() + (m_rightPaddle.getSpeed() * dt));
     }
-	
+	bool zeroPressed = input.isPressed(Key::Zero);
+	if (input.isPressed(Key::Zero) && !m_ai_previously_on) {
+		if (m_ai_on) { m_leftPaddle.setSpeed( m_leftPaddle.getSpeed() / 1.6f); }
+		else { m_leftPaddle.setSpeed( m_leftPaddle.getSpeed() * 1.6f); }
+		m_ai_on = !m_ai_on;
+	}
+
 	if (input.isPressed(Key::Escape)) {
 		window.setShouldClose(true);
 	}
-
-	// left paddle will be assumed to be AI
-	// simple algorithm, compare Y's
-	if (m_leftPaddle.getY() + static_cast<float>(m_leftPaddle.getHeight() / 2.0f)  > m_ball.y) {
-        m_leftPaddle.setY(m_leftPaddle.getY() - (m_leftPaddle.getSpeed() * dt));
-	} else {
-        m_leftPaddle.setY(m_leftPaddle.getY() + (m_leftPaddle.getSpeed() * dt));
+	bool spacePressed = input.isPressed(Key::Space);
+	if (input.isPressed(Key::Space) && !m_previously_paused) {
+		m_paused = !m_paused;
 	}
+	
+	// left paddle will be assumed to be AI
+	// simple algorithm, compare Y's, and if ball on ai's side
+	// basically undefeatable right now // add more sampling points for more natural
+	float random_val = 2.1f + m_distrib(m_generator);
+	if (m_ai_on) {
+
+	if ((m_ball.x < static_cast<float>(m_screenWidth / 2.0f) || m_ball.x > static_cast<float>(m_screenWidth / 1.5f)) 
+		&& (std::fabs(((m_leftPaddle.getY() + m_leftPaddle.getHeight()/2.0f)) - m_ball.y)) > (m_leftPaddle.getHeight() / (random_val)) ) {
+			if (m_leftPaddle.getY() + static_cast<float>(m_leftPaddle.getHeight() / 2.0f)  > m_ball.y) {
+				m_leftPaddle.setY(m_leftPaddle.getY() - (m_leftPaddle.getSpeed() * dt));
+			} else {
+				m_leftPaddle.setY(m_leftPaddle.getY() + (m_leftPaddle.getSpeed() * dt));
+			}
+		}
+
+	} // ai end 
 	
 	
 	m_leftPaddle.clamp(m_screenHeight);
 	m_rightPaddle.clamp(m_screenHeight);
+	
 
-	m_ball.update(m_screenHeight, m_screenWidth, dt, m_leftPaddle, m_rightPaddle);
+	if (!m_paused) m_ball.update(m_screenHeight, m_screenWidth, dt, m_leftPaddle, m_rightPaddle, random_val);
+	
+	m_previously_paused = spacePressed;
+	m_ai_previously_on = zeroPressed;
 
 	m_leftPaddle.checkCollisionLeft(m_ball);
 	m_rightPaddle.checkCollisionRight(m_ball);
@@ -122,7 +160,7 @@ void Game::render(Renderer& renderer, Window& window, Input& input, float dt) {
 
 	
 	renderer.useProgram(renderer.getDefaultbufferProgram());
-	renderer.postProcess(0,0,m_screenWidth,m_screenHeight);
+	renderer.postProcess(0,0,m_screenWidth,m_screenHeight,window);
 	
 	window.swapBuffers();
 }

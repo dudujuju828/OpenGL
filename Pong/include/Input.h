@@ -11,6 +11,8 @@ enum class Key {
 	S,
 	D,
 	Escape,
+	Zero,
+	Space,
 	Up,
 	Down,
 	Left,

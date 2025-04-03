@@ -51,7 +51,7 @@ void Paddle::checkCollisionLeft(Ball &ball) {
 		ball.velX = std::fabs(ball.velX);
 		// take the difference between the center of the paddle and the ball's y
 		float diff = (m_position.y + (m_dimensions.y /2.0f)) - ball.y; // if this value is negative, the ball is below the center of the paddle
-		float amplitude = 5.0f;
+		float amplitude = 10.0f;
 		ball.velY = diff * amplitude + ball.velY;
 		
 		// now to progress the game, increase both vely and velx by proportional amounts
@@ -78,7 +78,7 @@ void Paddle::checkCollisionRight(Ball &ball) {
 		ball.velX = -std::fabs(ball.velX);
 		// take the difference between the center of the paddle and the ball's y
 		float diff = (m_position.y + (m_dimensions.y /2.0f)) - ball.y; // if this value is negative, the ball is below the center of the paddle
-		float amplitude = 5.0f;
+		float amplitude = 10.0f;
 		ball.velY = diff * amplitude + ball.velY;
 
 		// now to progress the game, increase both vely and velx by proportional amounts
