@@ -1,6 +1,6 @@
 # OpenGL Projects
 
-![Project Banner](./Retro_Pong.png)
+![Project Banner](./gameplay.gif)
 
 This repository contains all of my OpenGL projects.
 
