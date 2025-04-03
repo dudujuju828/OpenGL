@@ -1,6 +1,7 @@
 # OpenGL Projects
 
-![Project Banner](./gameplay.gif)
+## Pong
+![Project Banner](./Pong/assets/pong_gameplay.gif)
 
 This repository contains all of my OpenGL projects.
 
