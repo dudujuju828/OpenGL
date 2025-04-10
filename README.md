@@ -1,5 +1,6 @@
 # OpenGL Projects
 This repository contains all of my OpenGL projects. Most will be games, but I'm sure some of them will be other sorts of applications.
+Currently, the sound only runs on linux as I'm using a custom engine.
 ## Pong
 ![Project Banner](./Pong/assets/pong_gameplay.gif)
 ### Key Mappings
@@ -12,6 +13,7 @@ This repository contains all of my OpenGL projects. Most will be games, but I'm 
 To run these projects, you must have the following dependencies installed in your compiler's include directory:
 - `glad/glad.h`
 - `GLFW/glfw3.h`
+- `alsa/asoundlib.h`
 - Other necessary OpenGL dependencies
 
 ## OpenGL Version
