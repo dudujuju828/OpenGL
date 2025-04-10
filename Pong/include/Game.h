@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Ball.h"
 #include "Paddle.h"
+#include "AudioEngine.h"
 
 #include <random>
 
@@ -55,7 +56,6 @@ private:
 	bool m_ai_on;
 	bool m_ai_previously_on;
 	
-
 	Texture m_backdropTexture;
 	
 	std::mt19937 m_generator;

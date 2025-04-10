@@ -1,6 +1,7 @@
 
 #include "../include/Ball.h"
 #include "../include/Paddle.h"
+#include "../include/AudioEngine.h"
 
 void Ball::update(float screen_height, float screen_width, float dt, Paddle& leftPaddle, Paddle& rightPaddle, float random_value) {
 	x += velX * dt;
@@ -14,14 +15,21 @@ void Ball::update(float screen_height, float screen_width, float dt, Paddle& lef
 	
 
 	if (y - radius < 0.0f) {
+		AudioEngine* g_aud_inst = AudioEngine::getInstance();
+		g_aud_inst->playWav("src/audio/wallbounce.wav");
 		y = radius;
 		velY = -velY;
 	} else if (y + radius > screen_height) {
+		AudioEngine* g_aud_inst = AudioEngine::getInstance();
+		g_aud_inst->playWav("src/audio/wallbounce.wav");	
 		y = screen_height - radius;
 		velY = -velY;
 	}
 
 	if (x + radius < 0.0f || x - radius > screen_width) {
+		AudioEngine* g_aud_inst = AudioEngine::getInstance();
+		g_aud_inst->playWav("src/audio/outofbound.wav");
+
 		x = screen_width * 0.5f;
 		y = screen_height * 0.5f;
 		velX = defaultVelX + additionVelX;

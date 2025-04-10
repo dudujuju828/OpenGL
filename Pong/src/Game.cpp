@@ -25,6 +25,7 @@ Game::Game()
 	, m_ai_on(true)
 	, m_ai_previously_on(false)
 {
+	
 }
 
 Game::~Game() {

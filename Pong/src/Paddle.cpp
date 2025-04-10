@@ -3,6 +3,7 @@
 #include "../include/Game.h"
 #include "../include/Paddle.h"
 #include "../include/Ball.h"
+#include "../include/AudioEngine.h"
 
 #include <algorithm>
 #include <cmath>
@@ -47,6 +48,9 @@ void Paddle::checkCollisionLeft(Ball &ball) {
 	(ball.y + ball.radius > upperY);
 		
 	if (collisionLeftPaddle) {
+		AudioEngine* g_audio_instance = AudioEngine::getInstance();
+		g_audio_instance->playWav("src/audio/rebound.wav");
+
 		ball.x = rightX + ball.radius;
 		ball.velX = std::fabs(ball.velX);
 		// take the difference between the center of the paddle and the ball's y
@@ -74,6 +78,10 @@ void Paddle::checkCollisionRight(Ball &ball) {
 	(ball.y + ball.radius > upperY);
 
 	if (collisionRightPaddle) {
+
+		AudioEngine* g_audio_engine = AudioEngine::getInstance();
+		g_audio_engine->playWav("src/audio/rebound.wav");
+
 		ball.x = leftX - ball.radius;
 		ball.velX = -std::fabs(ball.velX);
 		// take the difference between the center of the paddle and the ball's y
