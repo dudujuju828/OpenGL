@@ -10,15 +10,18 @@ Currently, the sound only runs on linux as I'm using a custom engine.
 
 ## Requirements
 
-To run these projects, you must have the following dependencies installed in your compiler's include directory:
+To run my projects, you'll need the following includes in your compilers directory.
 - `glad/glad.h`
 - `GLFW/glfw3.h`
 - `alsa/asoundlib.h`
-- Other necessary OpenGL dependencies
 
 ## OpenGL Version
 
 All projects in this repository are developed using OpenGL version 3.3.
+
+## Operating System Information
+The projects were built for linux, but they are built upon GLFW, a cross platform windowing library.
+The sound however, is only available on linux systems, and attempting to compile on other OS' may raise issues.
 
 ## Compilation Example
 
