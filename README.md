@@ -34,4 +34,4 @@ make
 ```
 
 ## 3D Landscape
-![Project Banner](./Pong/assets/3DWorld.gif)
+![PB](./Pong/assets/3DWorld.gif)
